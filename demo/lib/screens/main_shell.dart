@@ -14,9 +14,9 @@ class MainShell extends StatefulWidget {
 }
 
 class _MainShellState extends State<MainShell> {
-  int _currentIndex = 0;
+  int _i = 0;
 
-  final List<Widget> _screens = const [
+  final _screens = const [
     HomeScreen(),
     TransferScreen(),
     CardScreen(),
@@ -27,20 +27,44 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _screens),
+      body: IndexedStack(index: _i, children: _screens),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: AppColors.divider, width: 0.5)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: AppColors.separatorLight.withValues(alpha: 0.5), width: 0.5)),
         ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (i) => setState(() => _currentIndex = i),
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: '首页'),
-            BottomNavigationBarItem(icon: Icon(Icons.swap_horiz_rounded), label: '转账'),
-            BottomNavigationBarItem(icon: Icon(Icons.credit_card_rounded), label: 'U卡'),
-            BottomNavigationBarItem(icon: Icon(Icons.trending_up_rounded), label: '赚钱'),
-            BottomNavigationBarItem(icon: Icon(Icons.person_outline_rounded), label: '我的'),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _tab(Icons.house_rounded, '首页', 0),
+                _tab(Icons.swap_horiz_rounded, '转账', 1),
+                _tab(Icons.credit_card_rounded, 'U卡', 2),
+                _tab(Icons.show_chart_rounded, '赚钱', 3),
+                _tab(Icons.person_rounded, '我的', 4),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _tab(IconData icon, String label, int index) {
+    final on = _i == index;
+    return GestureDetector(
+      onTap: () => setState(() => _i = index),
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox(
+        width: 64,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 24, color: on ? AppColors.primary : AppColors.textQuaternary),
+            const SizedBox(height: 3),
+            Text(label, style: TextStyle(fontSize: 10, fontWeight: on ? FontWeight.w600 : FontWeight.w400, color: on ? AppColors.primary : AppColors.textQuaternary)),
           ],
         ),
       ),

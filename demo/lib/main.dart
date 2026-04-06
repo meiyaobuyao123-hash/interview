@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'theme/app_theme.dart';
-import 'screens/login_screen.dart';
+import 'screens/main_shell.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +20,7 @@ class SeaWalletApp extends StatelessWidget {
     return MaterialApp(
       title: 'SEA Wallet',
       theme: AppTheme.lightTheme,
-      home: const LoginScreen(),
+      home: const MainShell(),
       debugShowCheckedModeBanner: false,
     );
   }

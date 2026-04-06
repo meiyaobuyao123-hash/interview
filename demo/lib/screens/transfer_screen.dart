@@ -10,120 +10,109 @@ class TransferScreen extends StatefulWidget {
 }
 
 class _TransferScreenState extends State<TransferScreen> {
-  int _mode = 0; // 0=跨境汇款, 1=本地转账, 2=链上转账
-  final _amountController = TextEditingController(text: '500');
+  int _mode = 0;
+  final _amountCtrl = TextEditingController(text: '500');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('转账')),
+      appBar: AppBar(title: const Text('转账'), backgroundColor: AppColors.background),
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
             // Mode selector
             Container(
-              margin: const EdgeInsets.all(16),
+              margin: const EdgeInsets.fromLTRB(20, 8, 20, 20),
               padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(color: AppColors.divider.withValues(alpha: 0.5), borderRadius: BorderRadius.circular(10)),
-              child: Row(
-                children: [
-                  _modeTab('跨境汇款', 0),
-                  _modeTab('本地转账', 1),
-                  _modeTab('链上转账', 2),
-                ],
-              ),
+              decoration: BoxDecoration(color: AppColors.separatorLight.withValues(alpha: 0.6), borderRadius: BorderRadius.circular(12)),
+              child: Row(children: [_tab('跨境汇款', 0), _tab('本地转账', 1), _tab('链上转账', 2)]),
             ),
-
-            if (_mode == 0) _buildRemittanceFlow(),
-            if (_mode == 1) _buildLocalTransfer(),
-            if (_mode == 2) _buildOnChainTransfer(),
+            if (_mode == 0) _remittance(),
+            if (_mode == 1) _localTransfer(),
+            if (_mode == 2) _onChain(),
           ],
         ),
       ),
     );
   }
 
-  Widget _modeTab(String label, int index) {
-    final selected = _mode == index;
+  Widget _tab(String label, int i) {
+    final on = _mode == i;
     return Expanded(
       child: GestureDetector(
-        onTap: () => setState(() => _mode = index),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+        onTap: () => setState(() => _mode = i),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: selected ? Colors.white : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
+            color: on ? Colors.white : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: on ? [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 8)] : [],
           ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14, fontWeight: selected ? FontWeight.w600 : FontWeight.w400, color: selected ? AppColors.textPrimary : AppColors.textSecondary),
-          ),
+          child: Text(label, textAlign: TextAlign.center, style: TextStyle(fontSize: 14, fontWeight: on ? FontWeight.w600 : FontWeight.w400, color: on ? AppColors.textPrimary : AppColors.textTertiary)),
         ),
       ),
     );
   }
 
-  Widget _buildRemittanceFlow() {
+  Widget _remittance() {
     return Column(
       children: [
-        // Amount input
-        InfoCard(
+        // Amount
+        GlassCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('汇款金额', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-              const SizedBox(height: 8),
+              const Text('汇款金额', style: TextStyle(fontSize: 14, color: AppColors.textTertiary, letterSpacing: -0.1)),
+              const SizedBox(height: 12),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
                 children: [
-                  const Text('\$', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w300, color: AppColors.textTertiary)),
+                  const Text('\$', style: TextStyle(fontSize: 32, fontWeight: FontWeight.w300, color: AppColors.textQuaternary)),
                   const SizedBox(width: 4),
                   Expanded(
                     child: TextField(
-                      controller: _amountController,
-                      style: const TextStyle(fontSize: 36, fontWeight: FontWeight.w700),
+                      controller: _amountCtrl,
+                      style: const TextStyle(fontSize: 42, fontWeight: FontWeight.w700, letterSpacing: -1),
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(border: InputBorder.none, contentPadding: EdgeInsets.zero),
+                      decoration: const InputDecoration(border: InputBorder.none, contentPadding: EdgeInsets.zero, isDense: true),
                     ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      const Text('USDT', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.primary)),
-                      const Text('余额: \$8,200', style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
-                    ],
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(20)),
+                    child: const Text('USDT', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.primary)),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
-              const Text('≈ ₱28,115  |  ≈ ฿17,910', style: TextStyle(fontSize: 13, color: AppColors.textTertiary)),
+              const Text('余额 \$8,200.00  ·  ≈ ₱28,115', style: TextStyle(fontSize: 13, color: AppColors.textTertiary)),
             ],
           ),
         ),
         const SizedBox(height: 12),
 
-        // AI Rate suggestion
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: AppColors.earningGreen.withValues(alpha: 0.06),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.earningGreen.withValues(alpha: 0.2)),
-          ),
+        // AI
+        GlassCard(
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Icon(Icons.auto_awesome_rounded, color: AppColors.earningGreen, size: 20),
-              const SizedBox(width: 10),
-              Expanded(
+              Container(
+                width: 36, height: 36,
+                decoration: BoxDecoration(gradient: const LinearGradient(colors: AppColors.gradientGreen), borderRadius: BorderRadius.circular(10)),
+                child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 18),
+              ),
+              const SizedBox(width: 14),
+              const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('AI 汇率评分', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.earningGreen)),
-                    const SizedBox(height: 2),
-                    const Text('当前汇率处于30天78分位，比昨天好0.3%，建议现在汇', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+                    Text('AI 汇率评分 78/100', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.earning)),
+                    SizedBox(height: 2),
+                    Text('30天78分位，比昨天好0.3%，建议现在汇', style: TextStyle(fontSize: 13, color: AppColors.textTertiary)),
                   ],
                 ),
               ),
@@ -133,146 +122,144 @@ class _TransferScreenState extends State<TransferScreen> {
         const SizedBox(height: 12),
 
         // Recipient
-        InfoCard(
+        GlassCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('收款人', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-              const SizedBox(height: 12),
-              _infoRow('姓名', '张伟'),
-              _infoRow('手机号', '+86 138****8888'),
-              _infoRow('收款方式', 'GCash · +63 917****1234'),
-              _infoRow('到账币种', '菲律宾比索 (PHP)'),
+              const Text('收款人', style: TextStyle(fontSize: 14, color: AppColors.textTertiary)),
+              const SizedBox(height: 16),
+              _row('姓名', '张伟'),
+              _row('收款方式', 'GCash · +63 917****1234'),
+              _row('到账币种', '菲律宾比索 (PHP)'),
             ],
           ),
         ),
         const SizedBox(height: 12),
 
-        // Fee breakdown
-        InfoCard(
+        // Fee
+        GlassCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('费用明细', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-              const SizedBox(height: 10),
-              _feeRow('汇款金额', '\$500.00'),
-              _feeRow('手续费', '\$1.50 (0.3%)'),
-              _feeRow('汇率', '1 USDT = 56.23 PHP'),
-              const Divider(color: AppColors.divider),
-              _feeRow('收款人收到', '₱28,045', bold: true),
-              const SizedBox(height: 8),
+              _row('手续费', '\$1.50 (0.3%)'),
+              _row('汇率', '1 USDT = 56.23 PHP'),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Divider(color: AppColors.separatorLight),
+              ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(Icons.check_circle_rounded, color: AppColors.earningGreen, size: 16),
-                  const SizedBox(width: 6),
-                  const Text('比 Western Union 省 ₱1,180', style: TextStyle(fontSize: 13, color: AppColors.earningGreen, fontWeight: FontWeight.w500)),
+                  const Text('收款人收到', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  const Text('₱28,045', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
                 ],
+              ),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(color: AppColors.earning.withValues(alpha: 0.06), borderRadius: BorderRadius.circular(10)),
+                child: Row(
+                  children: [
+                    Icon(Icons.savings_rounded, color: AppColors.earning, size: 16),
+                    const SizedBox(width: 8),
+                    Text('比 Western Union 省 ₱1,180', style: TextStyle(fontSize: 14, color: AppColors.earning, fontWeight: FontWeight.w500)),
+                  ],
+                ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 28),
 
-        // Submit
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: SizedBox(
-            width: double.infinity,
-            height: 52,
+            width: double.infinity, height: 56,
             child: ElevatedButton(
-              onPressed: () => showMockSuccess(context, '汇款成功！\n₱28,045 将在30分钟内到账\n已通知收款人'),
+              onPressed: () => showAuthSheet(context, onSuccess: () => showMockSuccess(context, '汇款成功！\n₱28,045 将在30分钟内到账\n已通知收款人')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
               child: const Text('确认汇款', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
             ),
           ),
         ),
-        const SizedBox(height: 40),
+        const SizedBox(height: 60),
       ],
     );
   }
 
-  Widget _buildLocalTransfer() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: InfoCard(
-        margin: EdgeInsets.zero,
-        child: Column(
-          children: [
-            const Icon(Icons.phone_android_rounded, size: 48, color: AppColors.primary),
-            const SizedBox(height: 16),
-            const Text('输入手机号即可转账', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 8),
-            const Text('对方自动收到本地货币\n无需注册 SEA Wallet', style: TextStyle(fontSize: 14, color: AppColors.textSecondary), textAlign: TextAlign.center),
-            const SizedBox(height: 24),
-            TextField(
-              decoration: InputDecoration(
-                hintText: '输入收款人手机号',
-                prefixIcon: const Icon(Icons.search_rounded),
-                filled: true,
-                fillColor: AppColors.background,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOnChainTransfer() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: InfoCard(
-        margin: EdgeInsets.zero,
-        child: Column(
-          children: [
-            const Icon(Icons.link_rounded, size: 48, color: AppColors.accent),
-            const SizedBox(height: 16),
-            const Text('链上转账', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 8),
-            const Text('输入钱包地址\n支持 Tron / BSC / Ethereum', style: TextStyle(fontSize: 14, color: AppColors.textSecondary), textAlign: TextAlign.center),
-            const SizedBox(height: 24),
-            TextField(
-              decoration: InputDecoration(
-                hintText: '粘贴钱包地址',
-                suffixIcon: const Icon(Icons.qr_code_scanner_rounded),
-                filled: true,
-                fillColor: AppColors.background,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _infoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _localTransfer() {
+    return GlassCard(
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(32),
+      child: Column(
         children: [
-          Text(label, style: const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
-          Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+          Container(
+            width: 64, height: 64,
+            decoration: BoxDecoration(gradient: const LinearGradient(colors: AppColors.gradientBlue), borderRadius: BorderRadius.circular(18)),
+            child: const Icon(Icons.phone_android_rounded, color: Colors.white, size: 30),
+          ),
+          const SizedBox(height: 20),
+          const Text('输入手机号即可转账', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, letterSpacing: -0.3)),
+          const SizedBox(height: 8),
+          const Text('对方无需注册，直接到账本地货币', style: TextStyle(fontSize: 14, color: AppColors.textTertiary)),
+          const SizedBox(height: 28),
+          TextField(
+            decoration: InputDecoration(
+              hintText: '输入收款人手机号',
+              hintStyle: const TextStyle(color: AppColors.textQuaternary),
+              prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textTertiary),
+              filled: true, fillColor: AppColors.background,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _feeRow(String label, String value, {bool bold = false}) {
+  Widget _onChain() {
+    return GlassCard(
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        children: [
+          Container(
+            width: 64, height: 64,
+            decoration: BoxDecoration(gradient: const LinearGradient(colors: AppColors.gradientOrange), borderRadius: BorderRadius.circular(18)),
+            child: const Icon(Icons.link_rounded, color: Colors.white, size: 30),
+          ),
+          const SizedBox(height: 20),
+          const Text('链上转账', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, letterSpacing: -0.3)),
+          const SizedBox(height: 8),
+          const Text('支持 Tron / BSC / Ethereum', style: TextStyle(fontSize: 14, color: AppColors.textTertiary)),
+          const SizedBox(height: 28),
+          TextField(
+            decoration: InputDecoration(
+              hintText: '粘贴钱包地址',
+              hintStyle: const TextStyle(color: AppColors.textQuaternary),
+              suffixIcon: const Icon(Icons.qr_code_scanner_rounded, color: AppColors.textTertiary),
+              filled: true, fillColor: AppColors.background,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _row(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: 14, color: bold ? AppColors.textPrimary : AppColors.textSecondary, fontWeight: bold ? FontWeight.w600 : FontWeight.w400)),
-          Text(value, style: TextStyle(fontSize: 14, fontWeight: bold ? FontWeight.w700 : FontWeight.w500)),
+          Text(label, style: const TextStyle(fontSize: 15, color: AppColors.textTertiary)),
+          Text(value, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
         ],
       ),
     );
