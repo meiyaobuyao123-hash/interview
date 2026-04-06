@@ -1,41 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class AppColors {
-  // Primary palette - subtle, sophisticated
-  static const primary = Color(0xFF007AFF);
-  static const secondary = Color(0xFF34C759);
-  static const accent = Color(0xFFFF9F0A);
-  static const danger = Color(0xFFFF3B30);
-  static const purple = Color(0xFF5856D6);
-  static const teal = Color(0xFF64D2FF);
-  static const pink = Color(0xFFFF2D55);
-  static const indigo = Color(0xFF5E5CE6);
+/// Design system: monochrome + one accent color (brand blue)
+/// Inspired by Apple Wallet, Revolut, Linear
+class C {
+  // Brand
+  static const brand = Color(0xFF0066FF);
+  static const brandLight = Color(0xFFE8F0FE);
 
-  // Backgrounds
-  static const background = Color(0xFFF2F2F7);
-  static const cardBg = Colors.white;
-  static const elevatedBg = Color(0xFFFFFFFF);
+  // Greyscale
+  static const black = Color(0xFF000000);
+  static const grey900 = Color(0xFF1A1A1A);
+  static const grey700 = Color(0xFF48484A);
+  static const grey500 = Color(0xFF8E8E93);
+  static const grey300 = Color(0xFFC7C7CC);
+  static const grey200 = Color(0xFFE5E5EA);
+  static const grey100 = Color(0xFFF2F2F7);
+  static const white = Color(0xFFFFFFFF);
 
-  // Text hierarchy
-  static const textPrimary = Color(0xFF000000);
-  static const textSecondary = Color(0xFF3C3C43);
-  static const textTertiary = Color(0xFF8E8E93);
-  static const textQuaternary = Color(0xFFC7C7CC);
+  // Semantic (used sparingly)
+  static const green = Color(0xFF34C759);
+  static const red = Color(0xFFFF3B30);
+  static const orange = Color(0xFFFF9500);
 
-  // Separators
-  static const separator = Color(0xFFC6C6C8);
-  static const separatorLight = Color(0xFFE5E5EA);
-
-  // Semantic
-  static const success = Color(0xFF34C759);
-  static const earning = Color(0xFF30D158);
-
-  // Gradients
-  static const gradientBlue = [Color(0xFF007AFF), Color(0xFF5AC8FA)];
-  static const gradientPurple = [Color(0xFF5856D6), Color(0xFFAF52DE)];
-  static const gradientGreen = [Color(0xFF34C759), Color(0xFF30D158)];
-  static const gradientOrange = [Color(0xFFFF9F0A), Color(0xFFFF6723)];
+  // Surface
+  static const bg = grey100;
+  static const card = white;
 }
 
 class AppTheme {
@@ -43,37 +33,17 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      fontFamily: '.SF Pro Display',
-      scaffoldBackgroundColor: AppColors.background,
-      primaryColor: AppColors.primary,
-      colorScheme: ColorScheme.light(
-        primary: AppColors.primary,
-        secondary: AppColors.secondary,
-        surface: AppColors.cardBg,
-        error: AppColors.danger,
-      ),
+      scaffoldBackgroundColor: C.bg,
+      primaryColor: C.brand,
+      colorScheme: ColorScheme.light(primary: C.brand, secondary: C.green, surface: C.card, error: C.red),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFFF2F2F7),
-        foregroundColor: AppColors.textPrimary,
+        backgroundColor: C.bg,
+        foregroundColor: C.black,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
-        titleTextStyle: TextStyle(
-          color: AppColors.textPrimary,
-          fontSize: 17,
-          fontWeight: FontWeight.w600,
-          letterSpacing: -0.4,
-        ),
-      ),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Colors.white,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.textTertiary,
-        type: BottomNavigationBarType.fixed,
-        selectedLabelStyle: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, height: 1.6),
-        unselectedLabelStyle: TextStyle(fontSize: 10, height: 1.6),
-        elevation: 0,
+        titleTextStyle: TextStyle(color: C.black, fontSize: 17, fontWeight: FontWeight.w600, letterSpacing: -0.4),
       ),
     );
   }
